@@ -57,13 +57,21 @@ export default {
   },
   methods: {
     fetchAppointments() {
-      fetch("https://7iu2n9mlk7.execute-api.us-east-1.amazonaws.com/appointments")
-        .then(res => res.json())
-        .then(data => {
-          const parsed = JSON.parse(data.body);
-          this.appointments = parsed;
-        });
-    },
+  fetch("https://7iu2n9mlk7.execute-api.us-east-1.amazonaws.com/appointments")
+    .then(res => res.json())
+    .then(data => {
+      let appointments = [];
+      if (typeof data.body === 'string') {
+        appointments = JSON.parse(data.body);
+      } else if (Array.isArray(data.body)) {
+        appointments = data.body;
+      } else if (Array.isArray(data)) {
+        appointments = data;
+      }
+      this.appointments = appointments;
+    })
+    .catch(err => console.error('Error fetching appointments:', err));
+},
     updateStatus(appointment, newStatus) {
       const url = `https://7iu2n9mlk7.execute-api.us-east-1.amazonaws.com/appointments/${appointment.appointmentId}`;
       fetch(url, {
