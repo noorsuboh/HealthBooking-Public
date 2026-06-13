@@ -67,3 +67,24 @@ export default {
     updateStatus(appointment, newStatus) {
       const url = `https://7iu2n9mlk7.execute-api.us-east-1.amazonaws.com/appointments/${appointment.appointmentId}`;
       fetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      })
+        .then(async res => {
+          const rawBody = await res.text();
+          if (!res.ok) throw new Error(`HTTP ${res.status}: ${rawBody}`);
+          return JSON.parse(rawBody);
+        })
+        .then(() => {
+          alert("Status updated!");
+          this.fetchAppointments();
+        })
+        .catch(err => {
+          console.error("Failed to update status:", err);
+          alert("Update failed.");
+        });
+    }
+  }
+};
+</script>
