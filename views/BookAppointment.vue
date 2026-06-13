@@ -44,13 +44,21 @@ export default {
       slots: []
     };
   },
-  mounted() {
+ mounted() {
     fetch("https://7iu2n9mlk7.execute-api.us-east-1.amazonaws.com/slots")
       .then(res => res.json())
       .then(data => {
-        const parsed = JSON.parse(data.body);
-        this.slots = parsed.filter(s => !s.isBooked).map(s => s.slot);
-      });
+        let slots = [];
+        if (typeof data.body === 'string') {
+          slots = JSON.parse(data.body);
+        } else if (Array.isArray(data.body)) {
+          slots = data.body;
+        } else if (Array.isArray(data)) {
+          slots = data;
+        }
+        this.slots = slots.filter(s => !s.isBooked).map(s => s.slot);
+      })
+      .catch(err => console.error('Error fetching slots:', err));
   },
   methods: {
     submitAppointment() {
